@@ -8,28 +8,24 @@ def create_output(args):
 	in_st = os.stat(args.input_file)
 	in_size = in_st.st_size
 
-	in_f = open(args.input_file, 'r+b')
-	in_bytes = in_f.read(in_size)
-	in_f.close()
-
-	if (args.pid_file):
+	with open(args.input_file, 'r+b') as in_f:
+		in_bytes = in_f.read(in_size)
+	if args.pid_file:
 		pid_st = os.stat(args.pid_file)
 		pid_size = pid_st.st_size
 
-		pid_f = open(args.pid_file, 'r+b')
-		pid_bytes = pid_f.read(pid_size)
-		pid_f.close()
+		with open(args.pid_file, 'r+b') as pid_f:
+			pid_bytes = pid_f.read(pid_size)
 	else:
 		pid_bytes = bytes.fromhex(args.pid)
 
 	sha256 = hashlib.sha256()
 	sha256.update(in_bytes)
 
-	out_f = open(args.output_file, 'w+b')
-	out_f.write(pid_bytes)
-	out_f.write(sha256.digest())
-	out_f.write(in_bytes)
-	out_f.close()
+	with open(args.output_file, 'w+b') as out_f:
+		out_f.write(pid_bytes)
+		out_f.write(sha256.digest())
+		out_f.write(in_bytes)
 
 def main():
 	global args
